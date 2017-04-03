@@ -85,13 +85,13 @@ public class Agent extends Thread {
 				// print out event
 				//        System.out.format("Filesystem event has been detected in %s: %s\n", event.kind().name(), child);
 
-				Utils.logMessage("Processing dynamic log.");
 				Map<Long,String> lastLine = getLastLine(time);
 				if( !lastLine.containsKey(-1L)) {
 					time = lastLine.keySet().iterator().next();
 					if( lastTime != time ) {
 						currentLine = lastLine.get(time);
 						lastTime = time;
+						Utils.logMessage("Processing dynamic log.");
 						Utils.logMessage("Current time " + time + ". line: " + currentLine);
 						processDynamicLog(currentLine,staticLog);
 					}
