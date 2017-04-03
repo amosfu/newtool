@@ -58,6 +58,7 @@ public class Agent extends Thread {
 		}
 		
 		long time = Long.MAX_VALUE;
+		long lastTime = 0;
 				
 		while(true) {
 			String currentLine = null;
@@ -86,11 +87,14 @@ public class Agent extends Thread {
 
 				Utils.logMessage("Processing dynamic log.");
 				Map<Long,String> lastLine = getLastLine(time);
-				if( !lastLine.containsKey(-1L) ) {
+				if( !lastLine.containsKey(-1L)) {
 					time = lastLine.keySet().iterator().next();
-					currentLine = lastLine.get(time);
-					Utils.logMessage("Current time " + time + ". line: " + currentLine);
-					processDynamicLog(currentLine,staticLog);
+					if( lastTime != time ) {
+						currentLine = lastLine.get(time);
+						lastTime = time;
+						Utils.logMessage("Current time " + time + ". line: " + currentLine);
+						processDynamicLog(currentLine,staticLog);
+					}
 				}
 				else {
 					Utils.logMessage("Query detected, but there is nothing to process this time.");
