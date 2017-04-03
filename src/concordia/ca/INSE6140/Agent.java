@@ -63,65 +63,59 @@ public class Agent extends Thread {
 			String currentLine = null;
 			try {
 				// wait for key to be signalled
-	            WatchKey key;
-                //key = watcher.take();
-	            key = watcher.poll(1, TimeUnit.SECONDS);
-	            if (key == null) {
-	                continue;
-	            }
-                Path dir = keys.get(key);
-                if (dir == null) {
-                    System.err.println("WatchKey not recognized!!");
-                    continue;
-                }
-                
-                for (WatchEvent<?> event: key.pollEvents()) {
-                    final WatchEvent.Kind kind = event.kind();
-     
-                    if (kind == OVERFLOW) {
-                        continue;
-                    }
-     
-                    if (kind == ENTRY_MODIFY) {
-	                    // Context for directory entry event is the file name of entry
-	                    WatchEvent<Path> ev = cast(event);
-	                    Path name = ev.context();
-	                    Path child = dir.resolve(name);
-	     
-	                    // print out event
-	                    System.out.format("Filesystem event has been detected in %s: %s\n", event.kind().name(), child);
-	     
-	                    Utils.logMessage("Processing dynamic log.");
-	    				Map<Long,String> lastLine = getLastLine(time);
-	    				if( !lastLine.containsKey(-1L) ) {
-	    					time = lastLine.keySet().iterator().next();
-	    					currentLine = lastLine.get(time);
-	    					Utils.logMessage("Current time " + time + ". line: " + currentLine);
-		                    processDynamicLog(currentLine,staticLog);
-	    				}
-	    				else {
-	    					Utils.logMessage("Query detected, but there is nothing to process this time.");
-	    				}
-                    }
-                }
-     
-                // reset key and remove from set if directory no longer accessible
-                boolean valid = key.reset();
-                if (!valid) {
-                    keys.remove(key);
-  
-                    // all directories are inaccessible
-                    if (keys.isEmpty()) {
-                    	Utils.logMessage("Agent cannot find anything to monitor. It will shut down!",Type.ERROR);
-                        break;
-                    }
-                }
-			} catch (InterruptedException e) {
-				unregisterForChange();
+				//WatchKey key;
+				//key = watcher.take();
+				// Path dir = keys.get(key);
+
+				//if (dir == null) {
+				//    System.err.println("WatchKey not recognized!!");
+				//    continue;
+				//}
+
+				//for (WatchEvent<?> event: key.pollEvents()) {
+				//    final WatchEvent.Kind kind = event.kind();
+
+				//if (kind == ENTRY_MODIFY) {
+				// Context for directory entry event is the file name of entry
+				//        WatchEvent<Path> ev = cast(event);
+				//        Path name = ev.context();
+				//       Path child = dir.resolve(name);
+
+				// print out event
+				//        System.out.format("Filesystem event has been detected in %s: %s\n", event.kind().name(), child);
+
+				Utils.logMessage("Processing dynamic log.");
+				Map<Long,String> lastLine = getLastLine(time);
+				if( !lastLine.containsKey(-1L) ) {
+					time = lastLine.keySet().iterator().next();
+					currentLine = lastLine.get(time);
+					Utils.logMessage("Current time " + time + ". line: " + currentLine);
+					processDynamicLog(currentLine,staticLog);
+				}
+				else {
+					Utils.logMessage("Query detected, but there is nothing to process this time.");
+				}
+				Thread.sleep(500);
+				//}
+				//}
+
+				// reset key and remove from set if directory no longer accessible
+				// boolean valid = key.reset();
+				// if (!valid) {
+				//      keys.remove(key);
+
+				// all directories are inaccessible
+				//   if (keys.isEmpty()) {
+				//  	Utils.logMessage("Agent cannot find anything to monitor. It will shut down!",Type.ERROR);
+				//      break;
+				// }
+			}
+			catch (InterruptedException e) {
+				//unregisterForChange();
 				Utils.logMessage("An error has occurred while accessing the dynamic log: \n" + e.getStackTrace().toString(),Type.ERROR);
 			}
 		}
-		Utils.logMessage("Agent to shutdown .");
+//		Utils.logMessage("Agent to shutdown.");
 	}
 	
 	private void processDynamicLog(String logEntry,Map<Integer,String> staticQueryRepo) {
@@ -143,7 +137,6 @@ public class Agent extends Thread {
 	
 	private void unregisterForChange() {
 		// TODO Auto-generated method stub
-		
 	}
 
 
