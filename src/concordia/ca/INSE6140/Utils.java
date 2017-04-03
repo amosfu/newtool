@@ -151,7 +151,7 @@ public class Utils {
 	            if(idx > -1) {
 	            	long currentVal = Long.parseLong(line.substring(0, idx));
 	            	if( currentVal <= previousTime ) {
-	            		if( previousLine != null ) {
+	            		if( previousLine == null ) {
 	            			previousLine = line;
 	            		}
 	            		idx = previousLine.indexOf(SqlFormatPrettyfier.GENERAL_SEPARATOR);	            			
