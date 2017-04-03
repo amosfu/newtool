@@ -95,9 +95,10 @@ public class Utils {
             	Utils.logMessage("processDynamicQuery: templateQuery:");
             	Utils.logMessage(templateQuery);
                 if (templateQuery == null) {
+                    Utils.logMessage("processDynamicQuery: Not found on the repo... the query is suspicious.");
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
                     Utils.logMessage("processDynamicQuery: potentialTempSQLs:");
-                    Utils.logMessage(Arrays.toString(potentialTempSQLs.toArray()));
+                    Utils.logMessage(potentialTempSQLs != null? Arrays.toString(potentialTempSQLs.toArray()) : "null");
                     if(!potentialTempSQLs.isEmpty()){
                         suspiciousSQLTemp = potentialTempSQLs.get(0);
                     }
@@ -121,9 +122,10 @@ public class Utils {
             	Utils.logMessage("processDynamicQuery: templateQuery:");
             	Utils.logMessage(templateQuery);
                 if (templateQuery == null) { //Not found on the repo... the query is suspicious
+                    Utils.logMessage("processDynamicQuery: Not found on the repo... the query is suspicious.");
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
                     Utils.logMessage("processDynamicQuery: potentialTempSQLs:");
-                    Utils.logMessage(Arrays.toString(potentialTempSQLs.toArray()));                    
+                    Utils.logMessage(potentialTempSQLs != null? Arrays.toString(potentialTempSQLs.toArray()) : "null");
                     if(!potentialTempSQLs.isEmpty()){
                         suspiciousSQLTemp = potentialTempSQLs.get(0);
                     }

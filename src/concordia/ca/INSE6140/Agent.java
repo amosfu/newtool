@@ -94,7 +94,7 @@ public class Agent extends Thread {
 		                    processDynamicLog(currentLine,staticLog);
 	    				}
 	    				else {
-	    					Utils.logMessage("There is nothing to process this time.");
+	    					Utils.logMessage("Query detected, but there is nothing to process this time.");
 	    				}
                     }
                 }
@@ -109,11 +109,11 @@ public class Agent extends Thread {
                     	Utils.logMessage("Agent cannot find anything to monitor. It will shut down!",Type.ERROR);
                         break;
                     }
-                }                
-                
+                }
+				Utils.logMessage("Agent  to shutdown .");
 			} catch (InterruptedException e) {
 				unregisterForChange();
-				Utils.logMessage("An error has occured while accessing the dynamic log: \n" + e.getStackTrace().toString(),Type.ERROR);
+				Utils.logMessage("An error has occurred while accessing the dynamic log: \n" + e.getStackTrace().toString(),Type.ERROR);
 			}
 		}
 	}
