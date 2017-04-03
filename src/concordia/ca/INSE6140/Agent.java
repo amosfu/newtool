@@ -7,11 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.nio.file.StandardWatchEventKinds.*;
-<<<<<<< HEAD
 
 import concordia.ca.INSE6140.Utils.Type;
-=======
->>>>>>> branch 'master' of https://github.com/amosfu/newtool.git
 
 public class Agent extends Thread {
 	
