@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
@@ -63,8 +64,11 @@ public class Agent extends Thread {
 			try {
 				// wait for key to be signalled
 	            WatchKey key;
-                key = watcher.take();
-
+                //key = watcher.take();
+	            key = watcher.poll(1, TimeUnit.SECONDS);
+	            if (key == null) {
+	                continue;
+	            }
                 Path dir = keys.get(key);
                 if (dir == null) {
                     System.err.println("WatchKey not recognized!!");
