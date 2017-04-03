@@ -22,7 +22,7 @@ import javax.mail.internet.*;
 public class Utils {
     public static final File STATIC_TEMP = new File("./static_temp.txt");
     public static final String USAGE = "Usage: (static|dynamic) (source code/log path)";
-    private static final String[] mailRecipients = {"cerivas@gmail.com","fs1984@msn.com"};
+    private static final String[] mailRecipients = {"cerivas@gmail.com","fs1984@msn.com","vijay.satti@live.com"};
     private static final String from = "cerivas@gmail.com";  
     
     private static final String REGEX = "(INSERT |UPDATE |SELECT |WITH |DELETE )([^;]*)";
@@ -127,7 +127,7 @@ public class Utils {
 	  
 	         // Send message  
 	         Transport.send(message);  
-	         System.out.println("message sent successfully...."); 
+	         System.out.println("notifyPossibleAttack: message sent successfully...."); 
 	         result = true;
 	  
 	      }catch (MessagingException mex) {mex.printStackTrace();}  
