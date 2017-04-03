@@ -96,6 +96,8 @@ public class Utils {
             	Utils.logMessage(templateQuery);
                 if (templateQuery != null) {
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
+                    Utils.logMessage("processDynamicQuery: potentialTempSQLs:");
+                    Utils.logMessage(Arrays.toString(potentialTempSQLs.toArray()));
                     if(!potentialTempSQLs.isEmpty()){
                         suspiciousSQLTemp = potentialTempSQLs.get(0);
                     }
@@ -120,6 +122,8 @@ public class Utils {
             	Utils.logMessage(templateQuery);
                 if (templateQuery != null) {
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
+                    Utils.logMessage("processDynamicQuery: potentialTempSQLs:");
+                    Utils.logMessage(Arrays.toString(potentialTempSQLs.toArray()));                    
                     if(!potentialTempSQLs.isEmpty()){
                         suspiciousSQLTemp = potentialTempSQLs.get(0);
                     }
