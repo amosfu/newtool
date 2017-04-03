@@ -250,11 +250,11 @@ public class Utils {
     	
     	if( t == Type.INFO) {
     		logger.info(message);
-    		//System.out.println(message);
+    		System.out.println(message);
     	}
     	else {
     		logger.error(message);
-    		//System.err.println(message);
+    		System.err.println(message);
     	}
     }
     
