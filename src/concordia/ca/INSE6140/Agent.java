@@ -90,8 +90,12 @@ public class Agent extends Thread {
 	    				if( !lastLine.containsKey(-1L) ) {
 	    					time = lastLine.keySet().iterator().next();
 	    					currentLine = lastLine.get(time);
+	    					Utils.logMessage("Current time " + time + ". line: " + currentLine);
+		                    processDynamicLog(currentLine,staticLog);
 	    				}
-	                    processDynamicLog(currentLine,staticLog);
+	    				else {
+	    					Utils.logMessage("There is nothing to process this time.");
+	    				}
                     }
                 }
      

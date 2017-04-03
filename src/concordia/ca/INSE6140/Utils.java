@@ -5,7 +5,9 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,11 +76,24 @@ public class Utils {
 		if( logEntry != null ) {
 			//Query found.
             String[] components = logEntry.split("<<\\|[O|P]{0,1}>>");
+            Utils.logMessage("processDynamicQuery: " +components.length + " components found: ");
+            Utils.logMessage(Arrays.toString(components));
+            
             if( components.length == 6) {
+            	Utils.logMessage("processDynamicQuery: 6 components");
                 String suspiciousSQLTemp = components[components.length - 2];
                 String preparedSQL = components[components.length - 1];
                 String canonicalSQLTemplate = generateSQLTemplate(preparedSQL).get(0);
     			String templateQuery = staticQueryRepo.get(canonicalSQLTemplate.hashCode());
+    			Utils.logMessage("processDynamicQuery: found queries: ");
+            	Utils.logMessage("processDynamicQuery: suspiciousSQLTemp:");
+            	Utils.logMessage(suspiciousSQLTemp);
+            	Utils.logMessage("processDynamicQuery: preparedSQL:");
+            	Utils.logMessage(preparedSQL);
+            	Utils.logMessage("processDynamicQuery: canonicalSQLTemplate:");
+            	Utils.logMessage(canonicalSQLTemplate);
+            	Utils.logMessage("processDynamicQuery: templateQuery:");
+            	Utils.logMessage(templateQuery);
                 if (templateQuery != null) {
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
                     if(!potentialTempSQLs.isEmpty()){
@@ -92,9 +107,17 @@ public class Utils {
                 }
             }
             else if( components.length == 5) {
+            	Utils.logMessage("processDynamicQuery: 5 components");
                 String suspiciousSQLTemp = components[components.length - 1];
                 String canonicalSQLTemplate = generateSQLTemplate(suspiciousSQLTemp).get(0);
     			String templateQuery = staticQueryRepo.get(canonicalSQLTemplate.hashCode());
+    			Utils.logMessage("processDynamicQuery: found queries: ");
+            	Utils.logMessage("processDynamicQuery: suspiciousSQLTemp:");
+            	Utils.logMessage(suspiciousSQLTemp);
+            	Utils.logMessage("processDynamicQuery: canonicalSQLTemplate:");
+            	Utils.logMessage(canonicalSQLTemplate);
+            	Utils.logMessage("processDynamicQuery: templateQuery:");
+            	Utils.logMessage(templateQuery);
                 if (templateQuery != null) {
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
                     if(!potentialTempSQLs.isEmpty()){
