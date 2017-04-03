@@ -94,7 +94,7 @@ public class Utils {
             	Utils.logMessage(canonicalSQLTemplate);
             	Utils.logMessage("processDynamicQuery: templateQuery:");
             	Utils.logMessage(templateQuery);
-                if (templateQuery != null) {
+                if (templateQuery == null) {
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
                     Utils.logMessage("processDynamicQuery: potentialTempSQLs:");
                     Utils.logMessage(Arrays.toString(potentialTempSQLs.toArray()));
@@ -120,7 +120,7 @@ public class Utils {
             	Utils.logMessage(canonicalSQLTemplate);
             	Utils.logMessage("processDynamicQuery: templateQuery:");
             	Utils.logMessage(templateQuery);
-                if (templateQuery != null) {
+                if (templateQuery == null) { //Not found on the repo... the query is suspicious
                     List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
                     Utils.logMessage("processDynamicQuery: potentialTempSQLs:");
                     Utils.logMessage(Arrays.toString(potentialTempSQLs.toArray()));                    
