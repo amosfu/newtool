@@ -2,21 +2,11 @@ package concordia.ca.INSE6140;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import static java.nio.file.StandardWatchEventKinds.*;
-import static java.nio.file.LinkOption.*;
-
-import java.util.ArrayList;
+import java.nio.file.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.input.ReversedLinesFileReader;
+import static java.nio.file.StandardWatchEventKinds.*;
 
 public class Agent extends Thread {
 	
