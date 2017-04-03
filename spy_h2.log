@@ -1,0 +1,7 @@
+1488572831754|8|statement|connection 0|SELECT * FROM test WHERE id>?|SELECT * FROM test WHERE id>0
+1488573124641|8|statement|connection 0|SELECT * FROM test WHERE name=? and id=?|SELECT * FROM test WHERE name=''''' OR true=true' and id=1
+1488573436827|12|statement|connection 0|SELECT * FROM test WHERE name='hello' and id=1|
+1488573508487|13|statement|connection 0|SELECT * FROM test WHERE name='' or true=true or ''='' and id=1|
+1488573770894|8|statement|connection 0|SELECT * FROM test WHERE name=? and id=?|SELECT * FROM test WHERE name=''' OR true=true or ''=' and id=1
+1488580066363|8|statement|connection 0|SELECT * FROM test  WHERE name=? and id=?|SELECT * FROM test  WHERE name=''' OR true=true or ''=' and id=1
+1488580118933|8|statement|connection 0|SELECT * FROM test                                                                     WHERE name=? and id=?|SELECT * FROM test                                                                     WHERE name=''' OR true=true or ''=' and id=1

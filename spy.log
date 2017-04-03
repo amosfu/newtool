@@ -1,0 +1,8 @@
+1491225155617|6|statement|connection 0|SELECT * FROM test WHERE name='' or true=true or ''='' and id=1|
+1491225413240<<|>>6<<|>>statement<<|>>connection 0<<|>><<|>>SELECT * FROM test WHERE name='' or true=true or ''='' and id=1
+1491225563260<<|>>6<<|>>statement<<|>>connection 0<<|O>><<|P>>SELECT * FROM test WHERE name='' or true=true or ''='' and id=1
+1491225583991<<|>>5<<|>>statement<<|>>connection 0<<|O>>SELECT * FROM test WHERE name=''' OR true=true or ''=' and id=1<<|P>>SELECT * FROM test WHERE name=? and id=?
+1491225868357<<|>>5<<|>>statement<<|>>connection 0<<|O>><<|P>>SELECT * FROM test WHERE name='' or true=true or ''='' and id=1
+1491225875035<<|>>3<<|>>statement<<|>>connection 0<<|O>>SELECT * FROM test WHERE name=''' OR true=true or ''=' and id=1<<|P>>SELECT * FROM test WHERE name=? and id=?
+1491225952412<<|>>6<<|>>statement<<|>>connection 0<<|O>>SELECT * FROM test WHERE name='' or true=true or ''='' and id=1
+1491225957019<<|>>4<<|>>statement<<|>>connection 0<<|O>>SELECT * FROM test WHERE name=''' OR true=true or ''=' and id=1<<|P>>SELECT * FROM test WHERE name=? and id=?

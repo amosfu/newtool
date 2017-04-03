@@ -1,0 +1,2 @@
+1488657500424|3|statement|connection 0|SELECT * FROM test                                                                     WHERE name=? and id=?|SELECT * FROM test                                                                     WHERE name=''' OR true=true or ''=' and id=1
+1488657600415|7|statement|connection 0|SELECT * FROM test WHERE name='' or true=true or ''='' and id=1|
