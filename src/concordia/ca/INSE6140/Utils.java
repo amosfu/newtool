@@ -68,42 +68,41 @@ public class Utils {
     	boolean possibleAttack = false;
     	
 		if( logEntry != null ) {
-			String templateQuery = staticQueryRepo.get(logEntry.hashCode());
-			if( templateQuery != null ) {
-				//Query found.
-                String[] components = logEntry.split("<<\\|[O|P]{0,1}>>");
-                if( components.length == 6) {
-                    String suspiciousSQLTemp = components[components.length - 2];
-                    String preparedSQL = components[components.length - 1];
-                    String canonicalSQLTemplate = generateSQLTemplate(preparedSQL).get(0);
-                    if (!templateQuery.contains(canonicalSQLTemplate)) {
-                        List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
-                        if(!potentialTempSQLs.isEmpty()){
-                            suspiciousSQLTemp = potentialTempSQLs.get(0);
-                        }
-                        if (!suspiciousSQLTemp.equalsIgnoreCase(canonicalSQLTemplate)) {
-                        	possibleAttack = true;
-                            System.out.println(canonicalSQLTemplate);
-                            System.out.println("Attack found!\n" + canonicalSQLTemplate);
-                        }
+			//Query found.
+            String[] components = logEntry.split("<<\\|[O|P]{0,1}>>");
+            if( components.length == 6) {
+                String suspiciousSQLTemp = components[components.length - 2];
+                String preparedSQL = components[components.length - 1];
+                String canonicalSQLTemplate = generateSQLTemplate(preparedSQL).get(0);
+    			String templateQuery = staticQueryRepo.get(canonicalSQLTemplate.hashCode());
+                if (templateQuery != null) {
+                    List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
+                    if(!potentialTempSQLs.isEmpty()){
+                        suspiciousSQLTemp = potentialTempSQLs.get(0);
+                    }
+                    if (!suspiciousSQLTemp.equalsIgnoreCase(canonicalSQLTemplate)) {
+                    	possibleAttack = true;
+                        System.out.println(canonicalSQLTemplate);
+                        System.out.println("Attack found!\n" + canonicalSQLTemplate);
                     }
                 }
-                else if( components.length == 5) {
-                    String suspiciousSQLTemp = components[components.length - 1];
-                    String canonicalSQLTemplate = generateSQLTemplate(suspiciousSQLTemp).get(0);
-                    if (!templateQuery.contains(canonicalSQLTemplate)) {
-                        List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
-                        if(!potentialTempSQLs.isEmpty()){
-                            suspiciousSQLTemp = potentialTempSQLs.get(0);
-                        }
-                        if (!suspiciousSQLTemp.equalsIgnoreCase(canonicalSQLTemplate)) {
-                        	possibleAttack = true;
-                            System.out.println(canonicalSQLTemplate);
-                            System.out.println("Attack found!\n" + canonicalSQLTemplate);
-                        }
+            }
+            else if( components.length == 5) {
+                String suspiciousSQLTemp = components[components.length - 1];
+                String canonicalSQLTemplate = generateSQLTemplate(suspiciousSQLTemp).get(0);
+    			String templateQuery = staticQueryRepo.get(canonicalSQLTemplate.hashCode());
+                if (templateQuery != null) {
+                    List<String> potentialTempSQLs= generateSQLTemplate(suspiciousSQLTemp);
+                    if(!potentialTempSQLs.isEmpty()){
+                        suspiciousSQLTemp = potentialTempSQLs.get(0);
+                    }
+                    if (!suspiciousSQLTemp.equalsIgnoreCase(canonicalSQLTemplate)) {
+                    	possibleAttack = true;
+                        System.out.println(canonicalSQLTemplate);
+                        System.out.println("Attack found!\n" + canonicalSQLTemplate);
                     }
                 }
-			}
+            }
 		}
     	
         return possibleAttack;
