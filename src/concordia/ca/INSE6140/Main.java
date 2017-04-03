@@ -17,7 +17,7 @@ public class Main {
         if("static".equalsIgnoreCase(args[0])) {
             Utils.extractSQLFromCode(new File(args[1]));
         }else if("dynamic".equalsIgnoreCase(args[0])){
-        	Agent a = new Agent(Utils.STATIC_TEMP, new File(args[1]),"spy.log");
+        	Agent a = new Agent(Utils.STATIC_TEMP, new File(args[1]));
         	a.start();
         	Utils.logMessage("Dynamic agent has started successfully.");
             //Utils.extractSQLFromLog(new File(args[1]));

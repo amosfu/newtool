@@ -13,16 +13,14 @@ import concordia.ca.INSE6140.Utils.Type;
 public class Agent extends Thread {
 	
 	File pathToStaticLog;
-	File pathToDynamicLog;
 	File dynamicLogFile;
 	
 	private final WatchService watcher;
     private final Map<WatchKey,Path> keys;
     
-	public Agent(File pathToStaticLog, File pathToDynamicLog,String dynamicLogFilename) throws IOException {
+	public Agent(File pathToStaticLog, File dynamicLogFile) throws IOException {
 		this.pathToStaticLog = pathToStaticLog;
-		this.pathToDynamicLog = pathToDynamicLog;
-		this.dynamicLogFile = new File(pathToDynamicLog,dynamicLogFilename);
+		this.dynamicLogFile = dynamicLogFile;
 		this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey,Path>();
 	}
@@ -128,7 +126,7 @@ public class Agent extends Thread {
 	}
 
 	private void registerForChange() throws IOException {
-		Path dir = Paths.get(pathToDynamicLog.getParent());
+		Path dir = Paths.get(dynamicLogFile.getParent());
         WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_MODIFY);
         keys.put(key, dir);
     }
