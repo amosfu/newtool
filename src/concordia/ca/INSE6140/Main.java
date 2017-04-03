@@ -19,12 +19,11 @@ public class Main {
         }else if("dynamic".equalsIgnoreCase(args[0])){
         	Agent a = new Agent(Utils.STATIC_TEMP, new File(args[1]),"spy.log");
         	a.start();
-        	System.out.println("Dynamic agent has started successfully.");
+        	Utils.logMessage("Dynamic agent has started successfully.");
             //Utils.extractSQLFromLog(new File(args[1]));
         }else{
-            System.out.println("Unsupported Operation :" + args[0]);
+        	Utils.logMessage("Unsupported Operation :" + args[0]);
             Utils.printUsage();
-        	System.out.println(Utils.USAGE);
         }
     }
 }

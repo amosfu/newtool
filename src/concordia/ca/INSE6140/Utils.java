@@ -14,7 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.*;  
 import javax.mail.internet.*;  
-  
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 /**
  * Created by Amos on 2017-03-05.
  * Modified by Carlos on 2017-03-13.
@@ -27,6 +29,8 @@ public class Utils {
     
     private static final String REGEX = "(INSERT |UPDATE |SELECT |WITH |DELETE )([^;]*)";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
+    
+    private static final Logger logger = LogManager.getLogger(Utils.class);
 
     public static void extractSQLFromCode(File srcDir) throws IOException {
         String[] extensions = {"java", "jsp"};
@@ -35,7 +39,7 @@ public class Utils {
         BufferedWriter bw = new BufferedWriter(new FileWriter(STATIC_TEMP));
         for (File file : files) {
             String tempFile = "";
-            System.out.println(file.getName());
+            Utils.logMessage(file.getName());
             tempFile = FileUtils.readFileToString(file);
             for (String tempSQL : Utils.generateSQLTemplate(tempFile)) {
                 bw.write(tempSQL);
@@ -45,12 +49,12 @@ public class Utils {
         }
         bw.flush();
         bw.close();
-        System.out.println("SQL count: " + counter);
+        Utils.logMessage("SQL count: " + counter);
     }
 
     public static Map<Integer,String> loadStaticAnalysisLog(File staticLogFile) throws IOException  {
         if (!staticLogFile.exists()) {
-        	System.out.println( "static_temp.txt doesn't exist!\n" + Utils.USAGE);
+        	Utils.logMessage( "static_temp.txt doesn't exist!\n" + Utils.USAGE);
         	return null;
         }
         Map<Integer,String> hashFile = new HashMap<>();
@@ -82,8 +86,8 @@ public class Utils {
                     }
                     if (!suspiciousSQLTemp.equalsIgnoreCase(canonicalSQLTemplate)) {
                     	possibleAttack = true;
-                        System.out.println(canonicalSQLTemplate);
-                        System.out.println("Attack found!\n" + canonicalSQLTemplate);
+                    	Utils.logMessage(canonicalSQLTemplate);
+                    	Utils.logMessage("Attack found!\n" + canonicalSQLTemplate);
                     }
                 }
             }
@@ -98,8 +102,8 @@ public class Utils {
                     }
                     if (!suspiciousSQLTemp.equalsIgnoreCase(canonicalSQLTemplate)) {
                     	possibleAttack = true;
-                        System.out.println(canonicalSQLTemplate);
-                        System.out.println("Attack found!\n" + canonicalSQLTemplate);
+                    	Utils.logMessage(canonicalSQLTemplate);
+                    	Utils.logMessage("Attack found!\n" + canonicalSQLTemplate);
                     }
                 }
             }
@@ -126,7 +130,7 @@ public class Utils {
 	  
 	         // Send message  
 	         Transport.send(message);  
-	         System.out.println("notifyPossibleAttack: message sent successfully...."); 
+	         Utils.logMessage("notifyPossibleAttack: message sent successfully...."); 
 	         result = true;
 	  
 	      }catch (MessagingException mex) {mex.printStackTrace();}  
@@ -160,8 +164,8 @@ public class Utils {
             	previousLine = line;
 	        }
 	    } catch (IOException e) {
-			System.out.println("Cannot get the last time output in log.");
-			e.printStackTrace();
+	    	Utils.logMessage("Cannot get the last time output in log.");
+	    	Utils.logMessage(e.getStackTrace().toString(),Type.ERROR);
 		}		
 		
 		return result;
@@ -229,6 +233,29 @@ public class Utils {
     }
 
     public static void printUsage() {
-        System.out.println(USAGE);
+    	Utils.logMessage(USAGE);
     }
+    
+    public enum Type {
+    	INFO,
+    	ERROR
+    }
+    
+    public static void logMessage(String message, Type... type) {
+    	Type t;
+    	if( type.length == 0 ) 
+    		t = Type.INFO;
+    	else
+    		t = type[0];
+    	
+    	if( t == Type.INFO) {
+    		logger.info(message);
+    		//System.out.println(message);
+    	}
+    	else {
+    		logger.error(message);
+    		//System.err.println(message);
+    	}
+    }
+    
 }

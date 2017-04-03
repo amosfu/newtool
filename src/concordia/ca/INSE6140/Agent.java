@@ -18,6 +18,8 @@ import java.util.Map;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 
+import concordia.ca.INSE6140.Utils.Type;
+
 public class Agent extends Thread {
 	
 	File pathToStaticLog;
@@ -42,26 +44,25 @@ public class Agent extends Thread {
 	@Override
 	public void run() {
 		// Step 1 - Static 
-		System.out.println("Processing static analisys log.");
+		Utils.logMessage("Processing static analisys log.");
 		Map<Integer,String> staticLog = null;
 		try {
 			staticLog = Utils.loadStaticAnalysisLog(this.pathToStaticLog);
 		} catch (IOException e) {
-			System.out.println("An error has occured during retrieving of the static log: ");
-			e.printStackTrace();
+			Utils.logMessage("An error has occured during retrieving of the static log: \n" + e.getStackTrace().toString(),Type.ERROR);
+
 		}
 		
 		if(staticLog == null) {
-			System.out.println("Agent has no static queries to compare against. If some prepared statements are found, they will be used for comparison.");
+			Utils.logMessage("Agent has no static queries to compare against. If some prepared statements are found, they will be used for comparison.");
 		}
 
 		// Step 2 - Monitoring application execution through the log
-		System.out.println("Dynamic stage initiated.");
+		Utils.logMessage("Dynamic stage initiated.");
 		try {
 			registerForChange();
 		} catch (IOException e) {
-			System.out.println("An fatl error has occured during registration for changes in the dynamic log file. Agent will shut down!");
-			e.printStackTrace();
+			Utils.logMessage("A fatal error has occured during registration for changes in the dynamic log file. Agent will shut down!: \n" + e.getStackTrace().toString(),Type.ERROR);
 			return;
 		}
 		
@@ -96,7 +97,7 @@ public class Agent extends Thread {
 	                    // print out event
 	                    System.out.format("Filesystem event has been detected in %s: %s\n", event.kind().name(), child);
 	     
-	                    System.out.println("Processing dynamic log.");
+	                    Utils.logMessage("Processing dynamic log.");
 	    				Map<Long,String> lastLine = getLastLine(time);
 	    				if( !lastLine.containsKey(-1L) ) {
 	    					time = lastLine.keySet().iterator().next();
@@ -113,15 +114,14 @@ public class Agent extends Thread {
   
                     // all directories are inaccessible
                     if (keys.isEmpty()) {
-                    	System.out.println("Agent cannot find anything to monitor. It will shut down!");
+                    	Utils.logMessage("Agent cannot find anything to monitor. It will shut down!",Type.ERROR);
                         break;
                     }
                 }                
                 
 			} catch (InterruptedException e) {
 				unregisterForChange();
-                System.out.println("An error has occured while accessing the dynamic log:");
-                e.printStackTrace();
+				Utils.logMessage("An error has occured while accessing the dynamic log: \n" + e.getStackTrace().toString(),Type.ERROR);
 			}
 		}
 	}
