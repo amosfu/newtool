@@ -110,12 +110,12 @@ public class Agent extends Thread {
                         break;
                     }
                 }
-				Utils.logMessage("Agent  to shutdown .");
 			} catch (InterruptedException e) {
 				unregisterForChange();
 				Utils.logMessage("An error has occurred while accessing the dynamic log: \n" + e.getStackTrace().toString(),Type.ERROR);
 			}
 		}
+		Utils.logMessage("Agent to shutdown .");
 	}
 	
 	private void processDynamicLog(String logEntry,Map<Integer,String> staticQueryRepo) {
