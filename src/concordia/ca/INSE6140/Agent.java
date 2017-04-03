@@ -6,6 +6,8 @@ import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.nio.file.SensitivityWatchEventModifier;
+
 import static java.nio.file.StandardWatchEventKinds.*;
 
 import concordia.ca.INSE6140.Utils.Type;
@@ -131,7 +133,7 @@ public class Agent extends Thread {
 
 	private void registerForChange() throws IOException {
 		Path dir = Paths.get(dynamicLogFile.getParent());
-        WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_MODIFY);
+        WatchKey key = dir.register(watcher, new WatchEvent.Kind[]{StandardWatchEventKinds.ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
         keys.put(key, dir);
     }
 	
