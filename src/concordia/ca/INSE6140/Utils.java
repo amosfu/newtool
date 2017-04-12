@@ -26,8 +26,8 @@ import org.apache.logging.log4j.LogManager;
 public class Utils {
     public static final File STATIC_TEMP = new File("./static_temp.txt");
     public static final String USAGE = "Usage: (static|dynamic) (source code/log path)";
-    private static final String[] mailRecipients = {"cerivas@gmail.com","fs1984@msn.com","vijay.satti@live.com"};
-    private static final String from = "cerivas@gmail.com";  
+    private static String[] mailRecipients = null;
+    private static String from = null;  
     
     private static final String REGEX = "(INSERT |UPDATE |SELECT |WITH |DELETE )([^;]*)";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
@@ -143,13 +143,22 @@ public class Utils {
     
 	public static boolean notifyPossibleAttack(String suspiciousLogEntry) {
 	  
-		boolean result = false;
-	      Properties properties = System.getProperties();  
-	      properties.setProperty("mail.smtp.host", "localhost");  
-	      Session session = Session.getDefaultInstance(properties);  
-	  
+		  boolean result = false;
+		  InputStream inputProp = null;
+		  
 	      try{  
-	         MimeMessage message = new MimeMessage(session);  
+		     Properties properties = new Properties();  
+		     inputProp = Utils.class.getClassLoader().getResourceAsStream("mail.properties");
+		     properties.load(inputProp);
+		     Session session = Session.getInstance(properties,new javax.mail.Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(properties.getProperty("user"),properties.getProperty("password"));
+					}
+				  });  
+		     mailRecipients = properties.getProperty("recipients").split(",");
+		     from =  properties.getProperty("from");
+
+		     MimeMessage message = new MimeMessage(session);
 	         message.setFrom(new InternetAddress(from));  
 	         for( String recipient : mailRecipients ) {
 	        	 message.addRecipient(Message.RecipientType.TO,new InternetAddress(recipient));
@@ -162,7 +171,7 @@ public class Utils {
 	         Utils.logMessage("notifyPossibleAttack: message sent successfully...."); 
 	         result = true;
 	  
-	      }catch (MessagingException mex) {mex.printStackTrace();}  
+	      }catch (MessagingException | IOException mex) {mex.printStackTrace();}  
 	      
 	      return result;
 	}
