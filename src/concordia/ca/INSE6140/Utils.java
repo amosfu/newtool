@@ -134,7 +134,7 @@ public class Utils {
 		  InputStream inputProp = null;
 
 	      try{
-		     Properties properties = new Properties();
+		     final Properties properties = new Properties();
 		     inputProp = Utils.class.getClassLoader().getResourceAsStream("mail.properties");
 		     properties.load(inputProp);
 		     Session session = Session.getInstance(properties,new javax.mail.Authenticator() {
