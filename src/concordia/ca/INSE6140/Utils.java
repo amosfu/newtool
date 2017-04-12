@@ -14,9 +14,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.mail.*;
-import javax.mail.internet.*;
-
+import javax.mail.*;  
+import javax.mail.internet.*;  
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -27,9 +26,9 @@ import org.apache.logging.log4j.LogManager;
 public class Utils {
     public static final File STATIC_TEMP = new File("./static_temp.txt");
     public static final String USAGE = "Usage: (static|dynamic) (source code/log path)";
-    private static final String[] mailRecipients = {"cerivas@gmail.com", "fs1984@msn.com", "vijay.satti@live.com"};
-    private static final String from = "cerivas@gmail.com";
-
+    private static String[] mailRecipients = null;
+    private static String from = null;
+    
     private static final String REGEX = "(INSERT |UPDATE |SELECT |WITH |DELETE )([^;]*)";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
@@ -55,27 +54,27 @@ public class Utils {
         Utils.logMessage("SQL count: " + counter);
     }
 
-    public static Map<Integer, String> loadStaticAnalysisLog(File staticLogFile) throws IOException {
+    public static Map<Integer,String> loadStaticAnalysisLog(File staticLogFile) throws IOException  {
         if (!staticLogFile.exists()) {
-            Utils.logMessage("static_temp.txt doesn't exist!\n" + Utils.USAGE);
-            return null;
+        	Utils.logMessage( "static_temp.txt doesn't exist!\n" + Utils.USAGE);
+        	return null;
         }
-        Map<Integer, String> hashFile = new HashMap<>();
+        Map<Integer,String> hashFile = new HashMap<>();
         BufferedReader tempReader = new BufferedReader(new FileReader(staticLogFile));
         for (String sqlLine = tempReader.readLine(); null != sqlLine; sqlLine = tempReader.readLine()) {
-            hashFile.put(sqlLine.hashCode(), sqlLine);
+            hashFile.put(sqlLine.hashCode(),sqlLine);
         }
         tempReader.close();
 
         return hashFile;
     }
 
-    public static boolean processDynamicQuery(String logEntry, Map<Integer, String> staticQueryRepo) {
+    public static boolean processDynamicQuery(String logEntry, Map<Integer,String> staticQueryRepo)  {
 
-        boolean possibleAttack = false;
-
-        if (logEntry != null) {
-            //Query found.
+    	boolean possibleAttack = false;
+    	
+		if( logEntry != null ) {
+			//Query found.
             String[] components = logEntry.split("<<\\|[O|P]{0,1}>>");
             Utils.logMessage("processDynamicQuery: " + components.length + " components found: ");
             Utils.logMessage(Arrays.toString(components));
@@ -128,84 +127,74 @@ public class Utils {
 
         return possibleAttack;
     }
+    
+	public static boolean notifyPossibleAttack(String suspiciousLogEntry) {
+	  
+		  boolean result = false;
+		  InputStream inputProp = null;
 
-    public static boolean notifyPossibleAttack(String suspiciousLogEntry) {
+	      try{
+		     Properties properties = new Properties();
+		     inputProp = Utils.class.getClassLoader().getResourceAsStream("mail.properties");
+		     properties.load(inputProp);
+		     Session session = Session.getInstance(properties,new javax.mail.Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(properties.getProperty("user"),properties.getProperty("password"));
+					}
+				  });
+		     mailRecipients = properties.getProperty("recipients").split(",");
+		     from =  properties.getProperty("from");
 
-        boolean result = false;
+		     MimeMessage message = new MimeMessage(session);
+	         message.setFrom(new InternetAddress(from));
+	         for( String recipient : mailRecipients ) {
+	        	 message.addRecipient(Message.RecipientType.TO,new InternetAddress(recipient));
+	         }
+	         message.setSubject("Possible attack:");
+	         message.setText(String.format("Hello, we have detected a possible SQL injection attack.\n\nDetails: %s", suspiciousLogEntry));
 
-        final String username = "username@gmail.com";
-        final String password = "password";
+	         // Send message
+	         Transport.send(message);
+	         Utils.logMessage("notifyPossibleAttack: message sent successfully....");
+	         result = true;
 
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-        Session session = Session.getInstance(props,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(username, password);
-                    }
-                });
+	      }catch (MessagingException | IOException mex) {mex.printStackTrace();}
+	      
+	      return result;
+	}
+	
+	public static Map<Long,String> getLogLastLine(File dynamicLogFile, long previousTime) {
+		Map<Long,String> result = new HashMap<>();
+		result.put(-1L, ""); //default
 
-
-//        Properties properties = System.getProperties();
-//        properties.setProperty("mail.smtp.host", "localhost");
-//        Session session = Session.getDefaultInstance(properties);
-
-        try {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from));
-            for (String recipient : mailRecipients) {
-                message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-            }
-            message.setSubject("Possible attack:");
-            message.setText(String.format("Hello, we have detected a possible SQL injection attack.\n\nDetails: %s", suspiciousLogEntry));
-
-            // Send message
-            Transport.send(message);
-            Utils.logMessage("notifyPossibleAttack: message sent successfully....");
-            result = true;
-
-        } catch (MessagingException mex) {
-            mex.printStackTrace();
-        }
-
-        return result;
-    }
-
-    public static Map<Long, String> getLogLastLine(File dynamicLogFile, long previousTime) {
-        Map<Long, String> result = new HashMap<>();
-        result.put(-1L, ""); //default
-
-        try (@SuppressWarnings("deprecation")
-             ReversedLinesFileReader reader = new ReversedLinesFileReader(dynamicLogFile)) {
-            String line = null;
-            String previousLine = null;
-            while ((line = reader.readLine()) != null) {
-                int idx = line.indexOf(SqlFormatPrettyfier.GENERAL_SEPARATOR);
-                if (idx > -1) {
-                    long currentVal = Long.parseLong(line.substring(0, idx));
-                    if (currentVal <= previousTime) {
-                        if (previousLine == null) {
-                            previousLine = line;
-                        }
-                        idx = previousLine.indexOf(SqlFormatPrettyfier.GENERAL_SEPARATOR);
-                        long time = Long.parseLong(previousLine.substring(0, idx));
-                        result.clear();
-                        result.put(time, previousLine);
-                        break;
-                    }
-                }
-                previousLine = line;
-            }
-        } catch (IOException e) {
-            Utils.logMessage("Cannot get the last time output in log.");
-            Utils.logMessage(e.getStackTrace().toString(), Type.ERROR);
-        }
-
-        return result;
-    }
+		try (@SuppressWarnings("deprecation")
+		ReversedLinesFileReader reader = new ReversedLinesFileReader(dynamicLogFile)) {
+	        String line = null;
+	        String previousLine = null;
+	        while ((line = reader.readLine()) != null ) {
+	        	int idx = line.indexOf(SqlFormatPrettyfier.GENERAL_SEPARATOR);
+	            if(idx > -1) {
+	            	long currentVal = Long.parseLong(line.substring(0, idx));
+	            	if( currentVal <= previousTime ) {
+	            		if( previousLine == null ) {
+	            			previousLine = line;
+	            		}
+	            		idx = previousLine.indexOf(SqlFormatPrettyfier.GENERAL_SEPARATOR);	            			
+	            		long time = Long.parseLong(previousLine.substring(0, idx));
+	            		result.clear();
+	            		result.put(time, previousLine);
+	            		break;
+	            	}
+	            }
+            	previousLine = line;
+	        }
+	    } catch (IOException e) {
+	    	Utils.logMessage("Cannot get the last time output in log.");
+	    	Utils.logMessage(e.getStackTrace().toString(),Type.ERROR);
+		}		
+		
+		return result;
+	}
 
 /*
     public static boolean extractSQLFromLog(File dbLogFile) throws IOException, InterruptedException {
@@ -269,28 +258,29 @@ public class Utils {
     }
 
     public static void printUsage() {
-        Utils.logMessage(USAGE);
+    	Utils.logMessage(USAGE);
     }
-
+    
     public enum Type {
-        INFO,
-        ERROR
+    	INFO,
+    	ERROR
     }
-
+    
     public static void logMessage(String message, Type... type) {
-        Type t;
-        if (type.length == 0)
-            t = Type.INFO;
-        else
-            t = type[0];
-
-        if (t == Type.INFO) {
-            logger.info(message);
-            System.out.println(message);
-        } else {
-            logger.error(message);
-            System.err.println(message);
-        }
+    	Type t;
+    	if( type.length == 0 ) 
+    		t = Type.INFO;
+    	else
+    		t = type[0];
+    	
+    	if( t == Type.INFO) {
+    		logger.info(message);
+    		System.out.println(message);
+    	}
+    	else {
+    		logger.error(message);
+    		System.err.println(message);
+    	}
     }
-
+    
 }
